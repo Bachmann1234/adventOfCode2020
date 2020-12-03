@@ -1,8 +1,8 @@
 import fs from 'fs';
 
 export enum Tile {
-  Tree,
-  Ground
+  Ground = 0,
+  Tree
 }
 
 type Slope = Tile[][];
@@ -29,21 +29,15 @@ export function parseMap(input: string): Slope {
 }
 
 export function countTrees(slope: Slope, route: Route): number {
-  let columnPos = 0;
-  let rowPos = 0;
-  let treeCount = 0;
-  const rowLength = slope[0].length;
-  while (columnPos + route.down < slope.length) {
-    columnPos += route.down;
-    rowPos += route.right;
-    if (rowPos >= rowLength) {
-      rowPos -= rowLength;
-    }
-    if (slope[columnPos][rowPos] === Tile.Tree) {
-      treeCount += 1;
-    }
+  let count = 0;
+  let row = route.right;
+  let col = route.down;
+  while (slope[col]) {
+    count += slope[col][row % slope[0].length];
+    row += route.right;
+    col += route.down;
   }
-  return treeCount;
+  return count;
 }
 
 if (require.main === module) {
