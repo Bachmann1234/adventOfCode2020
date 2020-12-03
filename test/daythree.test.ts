@@ -1,4 +1,4 @@
-import { parseMap, Tile, countTrees, PART_ONE_ROUTE } from '../src/daythree';
+import { parseMap, Tile, countTrees, PART_ONE_ROUTE, countTreesIterative } from '../src/daythree';
 
 // prettier-ignore
 const exampleMap = [
@@ -35,4 +35,8 @@ test('can parse the input file', () => {
 
 test('can count Trees', () => {
   expect(countTrees(exampleMap, PART_ONE_ROUTE)).toStrictEqual(7);
+});
+
+test('can count Trees without recursion', () => {
+  expect(countTreesIterative(exampleMap, PART_ONE_ROUTE)).toStrictEqual(7);
 });

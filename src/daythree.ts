@@ -28,7 +28,31 @@ export function parseMap(input: string): Slope {
   return result;
 }
 
+function countTreesRecurse(
+  slope: Slope,
+  route: Route,
+  row: number,
+  column: number,
+  count: number,
+  rowLength: number
+): number {
+  return slope[column] === undefined
+    ? count
+    : countTreesRecurse(
+        slope,
+        route,
+        row + route.right,
+        column + route.down,
+        count + slope[column][row % rowLength],
+        rowLength
+      );
+}
+
 export function countTrees(slope: Slope, route: Route): number {
+  return countTreesRecurse(slope, route, route.right, route.down, 0, slope[0].length);
+}
+
+export function countTreesIterative(slope: Slope, route: Route): number {
   let count = 0;
   let row = route.right;
   let col = route.down;
