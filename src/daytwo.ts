@@ -50,11 +50,13 @@ export function parsePasswordFile(input: string): ProblemLine[] {
   });
 }
 
-try {
-  const data = fs.readFileSync('input/dayTwo', 'utf8');
-  const values = parsePasswordFile(data);
-  console.log(countValidPasswords(values, isValidPasswordPolicyOne));
-  console.log(countValidPasswords(values, isValidPasswordPolicyTwo));
-} catch (err) {
-  console.error(err);
+if (require.main === module) {
+  try {
+    const data = fs.readFileSync('input/dayTwo', 'utf8');
+    const values = parsePasswordFile(data);
+    console.log(countValidPasswords(values, isValidPasswordPolicyOne));
+    console.log(countValidPasswords(values, isValidPasswordPolicyTwo));
+  } catch (err) {
+    console.error(err);
+  }
 }

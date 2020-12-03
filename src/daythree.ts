@@ -46,11 +46,13 @@ export function countTrees(slope: Slope, route: Route): number {
   return treeCount;
 }
 
-try {
-  const data = fs.readFileSync('input/dayThree', 'utf8');
-  const slope = parseMap(data);
-  console.log(countTrees(slope, PART_ONE_ROUTE));
-  console.log(PART_TWO_ROUTES.map((r) => countTrees(slope, r)).reduce((cur, acc) => acc * cur));
-} catch (err) {
-  console.error(err);
+if (require.main === module) {
+  try {
+    const data = fs.readFileSync('input/dayThree', 'utf8');
+    const slope = parseMap(data);
+    console.log(countTrees(slope, PART_ONE_ROUTE));
+    console.log(PART_TWO_ROUTES.map((r) => countTrees(slope, r)).reduce((cur, acc) => acc * cur));
+  } catch (err) {
+    console.error(err);
+  }
 }

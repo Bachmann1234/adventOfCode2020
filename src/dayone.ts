@@ -58,11 +58,13 @@ export function findThreeThatSumTo2020(values: number[]): string {
   return '';
 }
 
-try {
-  const data = fs.readFileSync('input/dayOne', 'utf8');
-  const values = prepInput(data);
-  console.log(findTwoThatSumTo2020(values));
-  console.log(findThreeThatSumTo2020(values));
-} catch (err) {
-  console.error(err);
+if (require.main === module) {
+  try {
+    const data = fs.readFileSync('input/dayOne', 'utf8');
+    const values = prepInput(data);
+    console.log(findTwoThatSumTo2020(values));
+    console.log(findThreeThatSumTo2020(values));
+  } catch (err) {
+    console.error(err);
+  }
 }
