@@ -90,12 +90,39 @@ export function findMissingSeatId(seats: Seat[]): number {
   return -1;
 }
 
+// After learning that I underthought this one
+function altSolution(data: string): [number, number] {
+  const seatIds = data
+    .split('\n')
+    .map((p) => [...p].map((x) => (x === 'F' || x === 'L' ? 0 : 1)))
+    .map((x) => {
+      return (
+        Number.parseInt(x.slice(0, 7).join(''), 2) * 8 + Number.parseInt(x.slice(7).join(''), 2)
+      );
+    })
+    .sort((a, b) => a - b);
+
+  const fullSet = [];
+  const seatIdSet = new Set(seatIds);
+  for (let i = 0; i < seatIds.length; i += 1) {
+    fullSet.push(i + seatIds[0]);
+  }
+  return [
+    seatIds.reduce((acc, cur) => (cur > acc ? cur : acc)),
+    fullSet.filter((x) => !seatIdSet.has(x))[0]
+  ];
+}
+
 if (require.main === module) {
   try {
     const data = fs.readFileSync('input/dayFive', 'utf8');
     const seats = parseBoardingPasses(data).map((p) => findSeatPosition(p));
     console.log(findMaxSeatId(seats));
     console.log(findMissingSeatId(seats));
+    const [partOne, partTwo] = altSolution(data);
+    console.log('==== ALT ====');
+    console.log(partOne);
+    console.log(partTwo);
   } catch (err) {
     console.error(err);
   }
