@@ -1,0 +1,167 @@
+import { parseInput, buildAdaptorChain, computePartOne, countValidChains } from '../src/dayten';
+
+it('can parse the input', () => {
+  expect(
+    parseInput(`28
+33
+18
+42
+31
+14
+46
+20
+48
+47
+24
+23
+49
+45
+19
+38
+39
+11
+1
+32
+25
+35
+8
+17
+7
+9
+4
+2
+34
+10
+3`)
+  ).toStrictEqual([
+    28,
+    33,
+    18,
+    42,
+    31,
+    14,
+    46,
+    20,
+    48,
+    47,
+    24,
+    23,
+    49,
+    45,
+    19,
+    38,
+    39,
+    11,
+    1,
+    32,
+    25,
+    35,
+    8,
+    17,
+    7,
+    9,
+    4,
+    2,
+    34,
+    10,
+    3
+  ]);
+});
+
+it('can build joltage chain', () => {
+  expect(buildAdaptorChain([16, 10, 15, 5, 1, 11, 7, 19, 6, 12, 4])).toStrictEqual([
+    1,
+    4,
+    5,
+    6,
+    7,
+    10,
+    11,
+    12,
+    15,
+    16,
+    19,
+    22
+  ]);
+});
+
+it('can compute part 1s answer (differnces of 1 * differences of 3)', () => {
+  expect(
+    computePartOne(
+      buildAdaptorChain([
+        28,
+        33,
+        18,
+        42,
+        31,
+        14,
+        46,
+        20,
+        48,
+        47,
+        24,
+        23,
+        49,
+        45,
+        19,
+        38,
+        39,
+        11,
+        1,
+        32,
+        25,
+        35,
+        8,
+        17,
+        7,
+        9,
+        4,
+        2,
+        34,
+        10,
+        3
+      ])
+    )
+  ).toStrictEqual(220);
+});
+
+it('can count the number of valid chains', () => {
+  expect(countValidChains([1, 4, 5, 6, 7, 10, 11, 12, 15, 16, 19, 22])).toStrictEqual(8);
+  expect(
+    countValidChains(
+      buildAdaptorChain([
+        28,
+        33,
+        18,
+        42,
+        31,
+        14,
+        46,
+        20,
+        48,
+        47,
+        24,
+        23,
+        49,
+        45,
+        19,
+        38,
+        39,
+        11,
+        1,
+        32,
+        25,
+        35,
+        8,
+        17,
+        7,
+        9,
+        4,
+        2,
+        34,
+        10,
+        3
+      ])
+    )
+  ).toStrictEqual(19208);
+});
