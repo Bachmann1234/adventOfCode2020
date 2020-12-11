@@ -22,42 +22,36 @@ export function buildAdaptorChain(joltages: number[]): number[] {
   return sortedJoltages;
 }
 
-export function countValidChains(joltages: number[]): number {
-  let chains = 0;
-  const chainsInProgress = [
-    {
-      chain: [0],
-      remainingJoltages: joltages.slice()
-    }
-  ];
-  while (chainsInProgress.length) {
-    const chainInProgress = chainsInProgress.pop();
-    if (!chainInProgress) {
-      throw new Error('I dont think I can hit this but there was no chain');
-    }
-    const { chain, remainingJoltages } = chainInProgress;
-    while (remainingJoltages.length) {
-      let nextJoltage = remainingJoltages.shift();
-      if (nextJoltage === undefined) {
-        break;
-      }
-      const connector = chain.length === 0 ? 0 : chain[chain.length - 1];
-      while (nextJoltage && remainingJoltages[0] && remainingJoltages[0] - connector <= 3) {
-        const futureChain = chain.slice();
-        futureChain.push(nextJoltage);
-        chainsInProgress.push({
-          chain: futureChain,
-          remainingJoltages: remainingJoltages.slice()
-        });
-        nextJoltage = remainingJoltages.shift();
-      }
-      if (nextJoltage) {
-        chain.push(nextJoltage);
-      }
-    }
-    chains += 1;
+function countValidChainsRecurse(
+  chain: number[],
+  joltages: number[],
+  solutions: Map<string, number>,
+  curCount: 0
+): number {
+  const key = joltages.join(',');
+  const solution = solutions.get(key);
+  let count = curCount;
+  if (solution) {
+    return curCount + solution;
   }
-  return chains;
+  while (joltages.length) {
+    let nextJoltage = joltages.shift();
+    const connector = chain.length === 0 ? 0 : chain[chain.length - 1];
+    while (nextJoltage && joltages[0] && joltages[0] - connector <= 3) {
+      const futureChain = chain.slice();
+      futureChain.push(nextJoltage);
+      count += countValidChainsRecurse(futureChain, joltages.slice(), solutions, curCount);
+      nextJoltage = joltages.shift();
+    }
+    if (nextJoltage) {
+      chain.push(nextJoltage);
+    }
+  }
+  solutions.set(key, count + 1);
+  return count + 1;
+}
+export function countValidChains(joltages: number[]): number {
+  return countValidChainsRecurse([], joltages, new Map(), 0);
 }
 
 export function parseInput(data: string): number[] {
@@ -65,7 +59,7 @@ export function parseInput(data: string): number[] {
 }
 
 if (require.main === module) {
-  const data = fs.readFileSync('input/dayTen', 'utf-8');
+  const data = fs.readFileSync('input/dayTen', 'utf8');
   const joltages = parseInput(data);
   const adaptorChain = buildAdaptorChain(joltages);
   console.log(computePartOne(adaptorChain));
