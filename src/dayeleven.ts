@@ -28,7 +28,7 @@ function isSeatState(x: unknown): x is SeatState {
   return x === SeatState.EMPTY || x === SeatState.OCCUPIED || x === SeatState.FLOOR;
 }
 
-export function computeAdjacencies(seatRows: SeatState[][], row: number, col: number): SeatState[] {
+export function computeAdjacencies(seatRows: SeatState[][], row: number, col: number): number {
   const adjacents = [
     extractValue(seatRows, row - 1, col - 1),
     extractValue(seatRows, row - 1, col),
@@ -39,34 +39,9 @@ export function computeAdjacencies(seatRows: SeatState[][], row: number, col: nu
     extractValue(seatRows, row + 1, col),
     extractValue(seatRows, row + 1, col + 1)
   ];
-  return adjacents.filter(isSeatState);
-}
-
-export function partOneRules(seatRows: SeatState[][]): SeatState[][] {
-  const result: SeatState[][] = [];
-  for (const [rowNum, row] of seatRows.entries()) {
-    const newRow = [];
-    for (const [colNum, seat] of row.entries()) {
-      if (seat !== SeatState.FLOOR) {
-        const adjacents = computeAdjacencies(seatRows, rowNum, colNum);
-        const countOccupied = adjacents.reduce(
-          (acc, cur) => (cur === SeatState.OCCUPIED ? acc + 1 : acc),
-          0
-        );
-        if (countOccupied >= 4) {
-          newRow.push(SeatState.EMPTY);
-        } else if (countOccupied === 0) {
-          newRow.push(SeatState.OCCUPIED);
-        } else {
-          newRow.push(seat);
-        }
-      } else {
-        newRow.push(seat);
-      }
-    }
-    result.push(newRow);
-  }
-  return result;
+  return adjacents
+    .filter(isSeatState)
+    .reduce((acc, cur) => (cur === SeatState.OCCUPIED ? acc + 1 : acc), 0);
 }
 
 export function boardToString(seatRows: SeatState[][]): string {
@@ -96,133 +71,48 @@ export function countVisibleOccupiedSeats(
   let visible: SeatState | undefined = SeatState.FLOOR;
   let curRow = rowNum;
   let curCol = colNum;
-  // right
-  while (visible !== undefined) {
-    curCol += 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
+  const directions = [
+    [0, 1],
+    [0, -1],
+    [1, 0],
+    [-1, 0],
+    [1, 1],
+    [-1, 1],
+    [1, -1],
+    [-1, -1]
+  ];
+  for (const [rowDiff, colDiff] of directions) {
+    while (visible !== undefined) {
+      curRow += rowDiff;
+      curCol += colDiff;
+      visible = extractValue(seatRows, curRow, curCol);
+      if (visible === SeatState.OCCUPIED) {
+        result += 1;
+        break;
+      } else if (visible === SeatState.EMPTY) {
+        break;
+      }
     }
+    curRow = rowNum;
+    curCol = colNum;
+    visible = SeatState.FLOOR;
   }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // left
-  while (visible !== undefined) {
-    curCol -= 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // down
-  while (visible !== undefined) {
-    curRow += 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // up
-  while (visible !== undefined) {
-    curRow -= 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // diag Down Right
-  while (visible !== undefined) {
-    curRow += 1;
-    curCol += 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // diag Down Left
-  while (visible !== undefined) {
-    curCol += 1;
-    curRow -= 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // diag Up Right
-  while (visible !== undefined) {
-    curCol -= 1;
-    curRow += 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
-  visible = SeatState.FLOOR;
-  // diag UP Left
-  while (visible !== undefined) {
-    curCol -= 1;
-    curRow -= 1;
-    visible = extractValue(seatRows, curRow, curCol);
-    if (visible === SeatState.OCCUPIED) {
-      result += 1;
-      break;
-    } else if (visible === SeatState.EMPTY) {
-      break;
-    }
-  }
-  curRow = rowNum;
-  curCol = colNum;
 
   return result;
 }
 
-export function partTwoRules(seatRows: SeatState[][]): SeatState[][] {
+export function computeRound(
+  seatRows: SeatState[][],
+  visibilityRules: (seatRows: SeatState[][], row: number, col: number) => number,
+  numOccupiedToMove: number
+): SeatState[][] {
   const result: SeatState[][] = [];
   for (const [rowNum, row] of seatRows.entries()) {
     const newRow = [];
     for (const [colNum, seat] of row.entries()) {
       if (seat !== SeatState.FLOOR) {
-        const occupied = countVisibleOccupiedSeats(seatRows, rowNum, colNum);
-        if (occupied >= 5) {
+        const occupied = visibilityRules(seatRows, rowNum, colNum);
+        if (occupied >= numOccupiedToMove) {
           newRow.push(SeatState.EMPTY);
         } else if (occupied === 0) {
           newRow.push(SeatState.OCCUPIED);
@@ -240,20 +130,21 @@ export function partTwoRules(seatRows: SeatState[][]): SeatState[][] {
 
 export function simulateSeating(
   seatRows: SeatState[][],
-  computeRound: (n: SeatState[][]) => SeatState[][]
+  visibilityRules: (seatRows: SeatState[][], row: number, col: number) => number,
+  numOccupiedToMove: number
 ): SeatState[][] {
   let lastStateString = seatRows.flatMap((row) => row).join(',');
   if (DEBUG) {
     console.log(boardToString(seatRows));
   }
-  let curState = computeRound(seatRows);
+  let curState = computeRound(seatRows, visibilityRules, numOccupiedToMove);
   let curStateString = curState.flatMap((row) => row).join(',');
   while (curStateString !== lastStateString) {
     if (DEBUG) {
       console.log(boardToString(curState));
     }
     lastStateString = curStateString;
-    curState = computeRound(curState);
+    curState = computeRound(curState, visibilityRules, numOccupiedToMove);
     curStateString = curState.flatMap((row) => row).join(',');
   }
   return curState;
@@ -276,8 +167,8 @@ export function parseSeatMap(data: string): SeatState[][] {
 if (require.main === module) {
   const data = fs.readFileSync('input/dayEleven', 'utf-8');
   const initialMap = parseSeatMap(data);
-  const finalMapPartOne = simulateSeating(initialMap, partOneRules);
+  const finalMapPartOne = simulateSeating(initialMap, computeAdjacencies, 4);
   console.log(countOccupiedSeats(finalMapPartOne));
-  const finalMapPartTwo = simulateSeating(initialMap, partTwoRules);
+  const finalMapPartTwo = simulateSeating(initialMap, countVisibleOccupiedSeats, 5);
   console.log(countOccupiedSeats(finalMapPartTwo));
 }

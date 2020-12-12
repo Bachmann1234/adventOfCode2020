@@ -5,8 +5,7 @@ import {
   SeatState,
   simulateSeating,
   boardToString,
-  partOneRules,
-  partTwoRules
+  countVisibleOccupiedSeats
 } from '../src/dayeleven';
 
 // prettier-ignore
@@ -90,20 +89,11 @@ L.LLLLLL.L
 L.LLLLL.LL`);
 });
 
-it('can extract adjacent seats', () => {
-  expect(computeAdjacencies(finalMapPartOne, SeatState.OCCUPIED, 4)).toStrictEqual([
-    SeatState.EMPTY,
-    SeatState.OCCUPIED,
-    SeatState.EMPTY,
-    SeatState.FLOOR,
-    SeatState.FLOOR,
-    SeatState.OCCUPIED,
-    SeatState.FLOOR,
-    SeatState.OCCUPIED
-  ]);
+it('can count adjacent occupided spaces', () => {
+  expect(computeAdjacencies(finalMapPartOne, SeatState.OCCUPIED, 4)).toStrictEqual(3);
 });
 it('can simulate seating until stability part one', () => {
-  expect(simulateSeating(initialMap, partOneRules)).toStrictEqual(finalMapPartOne);
+  expect(simulateSeating(initialMap, computeAdjacencies, 4)).toStrictEqual(finalMapPartOne);
 });
 it('can count occupied seats', () => {
   expect(countOccupiedSeats(finalMapPartOne)).toStrictEqual(37);
@@ -122,7 +112,8 @@ L.LLLLL.LL
 LLLLLLLLLL
 L.LLLLLL.L
 L.LLLLL.LL`),
-      partTwoRules
+      countVisibleOccupiedSeats,
+      5
     )
   ).toStrictEqual(
     parseSeatMap(`#.L#.L#.L#
