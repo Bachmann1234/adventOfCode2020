@@ -3,10 +3,12 @@ import {
   AbsoluteDirection,
   CardinalDirection,
   computeManhattanDistance,
-  executeCommands
+  executeCommandsPartOne,
+  executeCommandsPartTwo,
+  reletiveRotate
 } from '../src/daytwelve';
 
-const partOneExampleCommands = [
+const exampleCommands = [
   { unit: 10, direction: AbsoluteDirection.FORWARD },
   { unit: 3, direction: CardinalDirection.NORTH },
   { unit: 7, direction: AbsoluteDirection.FORWARD },
@@ -21,7 +23,7 @@ N3
 F7
 R90
 F11`)
-  ).toStrictEqual(partOneExampleCommands);
+  ).toStrictEqual(exampleCommands);
 });
 
 it('can compute manhattan distance', () => {
@@ -36,16 +38,16 @@ it('can compute manhattan distance', () => {
   ).toStrictEqual(115);
 });
 
-it('can follow commands', () => {
+it('can follow commands part one', () => {
   expect(
-    executeCommands({ x: 0, y: 0, facing: CardinalDirection.EAST }, partOneExampleCommands)
+    executeCommandsPartOne({ x: 0, y: 0, facing: CardinalDirection.EAST }, exampleCommands)
   ).toStrictEqual({
     facing: CardinalDirection.SOUTH,
     x: 17,
     y: -8
   });
   expect(
-    executeCommands({ x: 0, y: 0, facing: CardinalDirection.EAST }, [
+    executeCommandsPartOne({ x: 0, y: 0, facing: CardinalDirection.EAST }, [
       { unit: 10, direction: AbsoluteDirection.FORWARD },
       { unit: 270, direction: AbsoluteDirection.RIGHT },
       { unit: 90, direction: AbsoluteDirection.LEFT },
@@ -59,5 +61,48 @@ it('can follow commands', () => {
     facing: CardinalDirection.WEST,
     x: 4,
     y: 5
+  });
+});
+
+it('can rotate reletive', () => {
+  // QUAD 1 RIGHT
+  expect(reletiveRotate({ x: 10, y: 4 }, AbsoluteDirection.RIGHT)).toStrictEqual({ x: 4, y: -10 });
+  // QUAD 1 LEFT
+  expect(reletiveRotate({ x: 4, y: -10 }, AbsoluteDirection.LEFT)).toStrictEqual({ x: 10, y: 4 });
+  // QUAD 2 RIGHT
+  expect(reletiveRotate({ x: -10, y: 1 }, AbsoluteDirection.RIGHT)).toStrictEqual({ x: 1, y: 10 });
+  // QUAD 2 LEFT
+  expect(reletiveRotate({ x: 1, y: 10 }, AbsoluteDirection.LEFT)).toStrictEqual({ x: -10, y: 1 });
+  // QUAD 3 RIGHT
+  expect(reletiveRotate({ x: -1, y: -10 }, AbsoluteDirection.RIGHT)).toStrictEqual({
+    x: -10,
+    y: 1
+  });
+  // QUAD 3 LEFT
+  expect(reletiveRotate({ x: -10, y: 1 }, AbsoluteDirection.LEFT)).toStrictEqual({
+    x: -1,
+    y: -10
+  });
+  // QUAD 4 LEFT
+  expect(reletiveRotate({ x: 4, y: -10 }, AbsoluteDirection.LEFT)).toStrictEqual({ x: 10, y: 4 });
+  // QUAD 4 RIGHT
+  expect(reletiveRotate({ x: 10, y: 4 }, AbsoluteDirection.RIGHT)).toStrictEqual({
+    x: 4,
+    y: -10
+  });
+});
+
+it('can follow commands part two', () => {
+  expect(
+    executeCommandsPartTwo(
+      {
+        shipPosition: { x: 0, y: 0, facing: CardinalDirection.EAST },
+        wayPointOffset: { x: 10, y: 1 }
+      },
+      exampleCommands
+    )
+  ).toStrictEqual({
+    shipPosition: { x: 214, y: -72, facing: CardinalDirection.EAST },
+    wayPointOffset: { x: 4, y: -10 }
   });
 });
